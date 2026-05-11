@@ -1,0 +1,128 @@
+{
+  "component_name": "Epitaxial Layer",
+  "deployment_assumptions": "Once deployed, the device cannot be updated, making pre-deployment measures crucial for security.",
+  "level": "doped_regions_wells_junctions",
+  "open_questions": [
+    "Detailed process monitoring capabilities already in place",
+    "Specific process control software versions and anomaly detection capabilities"
+  ],
+  "prioritization_summary": "Given the critical role of the epitaxial layer in uniform doping and reducing thickness variations, threats and requirements are prioritized based on preventing doping control failures and minimizing physical attack vectors.",
+  "prioritized_actions": [
+    {
+      "action_type": "threat",
+      "next_step": "Revise manufacturing monitoring and implement dual-check mechanisms for implant processes.",
+      "priority": "critical",
+      "priority_score": 95,
+      "rank": 1,
+      "rationale": "Highest impact if not addressed, with irreversible post-deployment consequences.",
+      "title": "Implant Dose Tampering"
+    },
+    {
+      "action_type": "security_requirement",
+      "next_step": "Integrate redundant monitoring systems in the implant dose stations.",
+      "priority": "critical",
+      "priority_score": 95,
+      "rank": 2,
+      "rationale": "Direct mitigation of the highest priority threat; must be implemented immediately.",
+      "title": "Enhanced Monitoring of Implant Doses"
+    },
+    {
+      "action_type": "threat",
+      "next_step": "Review and test current well isolation designs for adherence to defined specifications.",
+      "priority": "high",
+      "priority_score": 90,
+      "rank": 3,
+      "rationale": "Major impact on device functionality suitable for early design stage focus.",
+      "title": "Well Isolation Bypass"
+    }
+  ],
+  "security_requirements": [
+    {
+      "description": "Ensure precise monitoring and verification of implant doses during manufacturing to prevent tampering.",
+      "design_robustness": "Pre-emptive detection and correction prevent field-deployed faults.",
+      "mitigates": [
+        "Implant Dose Tampering"
+      ],
+      "owner": "Manufacturing QA Team",
+      "priority": "critical",
+      "priority_rationale": "Essential to prevent irreversible manufacturing defects that tamper with device functionality.",
+      "priority_score": 95,
+      "requirement": "Shall implement redundant, independent monitoring systems for each doping step to ensure correctness and detect anomalies in implant dose.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "title": "Enhanced Monitoring of Implant Doses",
+      "verification_method": "Regular audits and process control checks with logging and anomaly detection."
+    },
+    {
+      "description": "Validate well isolation through rigorous design and testing.",
+      "design_robustness": "Design-time validation ensures isolation integrity without post-deployment dependency on patches.",
+      "mitigates": [
+        "Well Isolation Bypass"
+      ],
+      "owner": "Design and Verification Teams",
+      "priority": "high",
+      "priority_rationale": "Critical for ensuring proper device functionality and resistance to unintended cross-coupling.",
+      "priority_score": 90,
+      "requirement": "Shall conduct simulation and physical verification tests to ensure well isolation meets defined impedances and separations.",
+      "sdlc_phase": "architecture_design",
+      "title": "Design Verification of Well Isolation",
+      "verification_method": "Design rule checks and physical isolation validation testing with failure condition modeling."
+    }
+  ],
+  "summary": "Assessment of the epitaxial layer, focusing on its critical role in semiconductor device formation and its impact on sensitive analog signals and device identification data.",
+  "threats": [
+    {
+      "attack_surface": "Manufacturing tools and implant processes.",
+      "confidence": "high",
+      "deployment_consequence": "Irreversible once the device is manufactured and deployed.",
+      "description": "Malicious alteration of the implant dose can disrupt the intended electrical properties of the epitaxial layer, affecting device performance.",
+      "potential_impact": "Disruption of device function, compromising signal integrity and identification data.",
+      "preconditions": [
+        "Insider access to manufacturing environment",
+        "Insufficient process monitoring"
+      ],
+      "priority": "critical",
+      "priority_rationale": "Critical due to irreversible impact on device functionality post-manufacturing and difficult detection without enhanced controls.",
+      "priority_score": 95,
+      "scenario": "An adversary with insider access alters implant doses, leading to uncontrolled variations in device characteristics.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "sdlc_phase_description": "Introduced and detectable during the manufacturing process, especially in dopant implantation steps.",
+      "title": "Implant Dose Tampering"
+    },
+    {
+      "attack_surface": "Electrical and chemical pathways in the device structure.",
+      "confidence": "medium",
+      "deployment_consequence": "Design flaws cannot be rectified post-deployment, leading to prolonged device vulnerabilities.",
+      "description": "Unintended electrical connectivity due to isolation breaches, compromising device operation.",
+      "potential_impact": "Interference with circuit operation, leading to data leakage or device malfunction.",
+      "preconditions": [
+        "Design flaws in well isolation",
+        "Advanced chemical/material access"
+      ],
+      "priority": "high",
+      "priority_rationale": "High priority due to the foundational nature of well isolation and its implications for device integrity.",
+      "priority_score": 90,
+      "scenario": "An attacker exploits weak isolation to create unintended pathways, bypassing designed circuit paths.",
+      "sdlc_phase": "architecture_design",
+      "sdlc_phase_description": "Requires careful design to ensure adequate separation and isolation of wells.",
+      "title": "Well Isolation Bypass"
+    },
+    {
+      "attack_surface": "Microscopic process variables and tolerances.",
+      "confidence": "medium",
+      "deployment_consequence": "Variations embedded in the manufacturing phase cannot be corrected post-deployment.",
+      "description": "Exploiting natural variations in the manufacturing process to induce undesirable device characteristics.",
+      "potential_impact": "Degradation of signal quality and compromising device reliability.",
+      "preconditions": [
+        "Knowledge of process tolerances",
+        "Access to process control data"
+      ],
+      "priority": "medium",
+      "priority_rationale": "Medium priority, considering the natural variability but significant potential impact on device reliability.",
+      "priority_score": 75,
+      "scenario": "An attacker with process knowledge exploits slight variations in dopant distribution to alter device behavior predictably.",
+      "sdlc_phase": "verification_validation",
+      "sdlc_phase_description": "Pattern recognition and validation can uncover unintended process variations before deployment.",
+      "title": "Process Variation Exploitation"
+    }
+  ]
+}

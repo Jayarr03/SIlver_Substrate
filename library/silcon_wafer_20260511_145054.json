@@ -1,0 +1,171 @@
+{
+  "component_name": "Silicon Wafer",
+  "deployment_assumptions": "Assumes most devices using the silicon wafer substrate cannot be updated once deployed, emphasizing the need for robust pre-deployment controls and high-reliability manufacturing processes.",
+  "level": "wafer_process_chemistry",
+  "open_questions": [
+    "What chemical purity standards are currently enforced at the manufacturing facility?",
+    "Is there existing automation in place for wafer process parameters, and how robust are the feedback loops?",
+    "What defect detection technology is used for substrate inspections?"
+  ],
+  "prioritization_summary": "Threats prioritized based on the criticality of maintaining circuit integrity, managing process variability, and preventing chemical contamination during wafer fabrication. Uses comprehensive SDLC analysis and robustness in design.",
+  "prioritized_actions": [
+    {
+      "action_type": "threat",
+      "next_step": "Implement rigorous chemical verification protocols at fab entry points.",
+      "priority": "critical",
+      "priority_score": 95,
+      "rank": 1,
+      "rationale": "This threat poses an immediate risk to device integrity and cannot be mitigated after process initiation.",
+      "title": "Chemical Contamination"
+    },
+    {
+      "action_type": "security_requirement",
+      "next_step": "Establish chemical audit schedules and analytical verification capabilities.",
+      "priority": "critical",
+      "priority_score": 95,
+      "rank": 2,
+      "rationale": "Implements direct controls to address the highest priority threat from chemical contamination.",
+      "title": "Chemical Purity Verification"
+    },
+    {
+      "action_type": "threat",
+      "next_step": "Enhance substrate inspection methods for incoming materials.",
+      "priority": "critical",
+      "priority_score": 92,
+      "rank": 3,
+      "rationale": "Fundamentally affects entire manufacturing quality; must be addressed proactively.",
+      "title": "Substrate Defects"
+    },
+    {
+      "action_type": "security_requirement",
+      "next_step": "Procure defect detection systems capable of high-throughput analysis.",
+      "priority": "critical",
+      "priority_score": 92,
+      "rank": 4,
+      "rationale": "Directly linked to preventing the use of substandard substrates, supporting high reliability.",
+      "title": "Substrate Defect Inspection"
+    },
+    {
+      "action_type": "threat",
+      "next_step": "Review process control standards and implement further automation where necessary.",
+      "priority": "high",
+      "priority_score": 88,
+      "rank": 5,
+      "rationale": "Significantly impacts yield and performance, needing robust control methods.",
+      "title": "Process Variability"
+    },
+    {
+      "action_type": "security_requirement",
+      "next_step": "Install and test new control automation systems.",
+      "priority": "high",
+      "priority_score": 90,
+      "rank": 6,
+      "rationale": "Ensures consistency and control across critical manufacturing phases.",
+      "title": "Process Control Automation"
+    }
+  ],
+  "security_requirements": [
+    {
+      "description": "Ensure all chemicals used in processing meet purity standards to prevent contamination.",
+      "design_robustness": "Chemical contamination prevention is implemented at the process level, allowing for detection and correction before use.",
+      "mitigates": [
+        "Chemical Contamination"
+      ],
+      "owner": "Manufacturing Quality Assurance Team",
+      "priority": "critical",
+      "priority_rationale": "Addresses critical threat of process-induced contamination, vital for long-term reliability.",
+      "priority_score": 95,
+      "requirement": "All chemicals used in wafer processes shall be verified for standard purity levels before use.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "title": "Chemical Purity Verification",
+      "verification_method": "Regular audits and analytical verification of chemical shipments."
+    },
+    {
+      "description": "Automate critical process controls to reduce variability and maintain consistency.",
+      "design_robustness": "Automation minimizes manual errors and ensures consistent processing, critical in non-updatable devices.",
+      "mitigates": [
+        "Process Variability"
+      ],
+      "owner": "Process Engineering Team",
+      "priority": "high",
+      "priority_rationale": "High impact on yield and performance consistency, essential for effective fabrication controls.",
+      "priority_score": 90,
+      "requirement": "Critical wafer processing parameters should be automated with real-time monitoring and feedback loops.",
+      "sdlc_phase": "architecture_design",
+      "title": "Process Control Automation",
+      "verification_method": "Continuous monitoring and adjustment via automated systems with redundancy checks."
+    },
+    {
+      "description": "Conduct thorough inspection of substrates to identify and reject defect-prone wafers.",
+      "design_robustness": "Ensures only high-quality substrates are used, preventing irreversible propagation of defects.",
+      "mitigates": [
+        "Substrate Defects"
+      ],
+      "owner": "Material Procurement and Quality Assurance",
+      "priority": "critical",
+      "priority_rationale": "Prevents foundational defects that can undermine entire device operations.",
+      "priority_score": 92,
+      "requirement": "Incoming wafer substrates shall undergo defect density analysis and rejection based on predefined criteria.",
+      "sdlc_phase": "requirements",
+      "title": "Substrate Defect Inspection",
+      "verification_method": "Use advanced imaging and defect detection prior to process initiation."
+    }
+  ],
+  "summary": "Assessment focusing on threats and robust requirements within wafer-level process chemistry, addressing contamination, processing variability, and substrate defects.",
+  "threats": [
+    {
+      "attack_surface": "Chemical processing systems and materials used during wafer fabrication.",
+      "confidence": "high",
+      "deployment_consequence": "Contaminants embedded in the wafer cannot be removed after deployment, leading to irreversible damage.",
+      "description": "Unintended chemical contamination during wafer processing can lead to defects affecting transistor performance and IC reliability.",
+      "potential_impact": "Degraded performance, reduced yield, and potential IC failures in sensitive applications.",
+      "preconditions": [
+        "Access to chemical storage or processing equipment.",
+        "Lack of monitoring or verification of chemical purity."
+      ],
+      "priority": "critical",
+      "priority_rationale": "Chemical contamination directly impacts wafer functionality and IC reliability, requiring stringent controls during manufacturing.",
+      "priority_score": 95,
+      "scenario": "An incorrect chemical mixture during etching leads to widespread contamination of wafers.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "sdlc_phase_description": "Threat is introduced during wafer processing and fabrication.",
+      "title": "Chemical Contamination"
+    },
+    {
+      "attack_surface": "Photolithography equipment and diffusion processes.",
+      "confidence": "high",
+      "deployment_consequence": "Process-induced defects are unrecoverable post-deployment, affecting all produced ICs.",
+      "description": "Variations in process parameters can lead to inconsistent wafer characteristics, affecting yield and performance.",
+      "potential_impact": "Yield loss, performance deviations across ICs, and reliability issues.",
+      "preconditions": [
+        "Lack of automation in process control.",
+        "Inadequate monitoring of process parameters."
+      ],
+      "priority": "high",
+      "priority_rationale": "High-impact potential on yield and performance, requiring stable and controlled process parameters.",
+      "priority_score": 88,
+      "scenario": "Changes in etching or doping parameters affect key wafer characteristics.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "sdlc_phase_description": "Introduced through variability in manufacturing processes.",
+      "title": "Process Variability"
+    },
+    {
+      "attack_surface": "Wafer substrate and raw material selection.",
+      "confidence": "high",
+      "deployment_consequence": "Substrate defects are permanent and affect all downstream processes.",
+      "description": "Defects in the silicon substrate can propagate through the manufacturing process, degrading device performance.",
+      "potential_impact": "Reduced device reliability and increased failure rates.",
+      "preconditions": [
+        "Substandard incoming material inspection protocols.",
+        "Lack of defect density monitoring."
+      ],
+      "priority": "critical",
+      "priority_rationale": "Criticality in achieving reliable and defect-free substrates essential for high-performance ICs.",
+      "priority_score": 92,
+      "scenario": "Microscopic substrate defects undetected during incoming material inspection.",
+      "sdlc_phase": "requirements",
+      "sdlc_phase_description": "Prevented through strict material selection and defect analysis before fabrication begins.",
+      "title": "Substrate Defects"
+    }
+  ]
+}

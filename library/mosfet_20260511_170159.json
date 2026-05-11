@@ -1,0 +1,163 @@
+{
+  "component_name": "MOSFET",
+  "deployment_assumptions": "Once deployed, MOSFETs are not typically replaceable or updatable. Devices may be physically accessible to attackers and are expected to have a long operational life without intervention.",
+  "level": "terminals_channel_body",
+  "open_questions": [
+    "What specific use cases or environmental conditions are anticipated for these MOSFETs?",
+    "What measures are currently in place for gate oxide quality control during manufacturing?",
+    "Can more detailed asset-specific clarity (e.g., key type, authorization model) be provided?"
+  ],
+  "prioritization_summary": "Security prioritization focuses on threats to cryptographic keys and authorization states directly impacted by electrical properties and degradation risks as they relate to MOSFET terminals and channels.",
+  "prioritized_actions": [
+    {
+      "action_type": "threat",
+      "next_step": "Conduct detailed leakage path simulations for known cryptographic current states.",
+      "priority": "critical",
+      "priority_score": 95,
+      "rank": 1,
+      "rationale": "Immediate leakage risks to cryptographic elements must be prioritized due to their critical impact and lack of mitigation post-release.",
+      "title": "Sub-threshold Leakage Exploit"
+    },
+    {
+      "action_type": "security_requirement",
+      "next_step": "Integrate leakage mitigation strategies into design, focusing on known vulnerable states.",
+      "priority": "critical",
+      "priority_score": 90,
+      "rank": 2,
+      "rationale": "Simultaneous with understanding leakage paths, robust leakage controls should be integrated into design to avoid confidentiality breaches.",
+      "title": "Sub-threshold Leakage Mitigation"
+    },
+    {
+      "action_type": "threat",
+      "next_step": "Verify oxide resistance with stress tests applied to a pre-production batch.",
+      "priority": "high",
+      "priority_score": 85,
+      "rank": 3,
+      "rationale": "Gate reliability impacts device operation longevity and security; must be addressed pre-fabrication.",
+      "title": "Gate Oxide Breakdown"
+    },
+    {
+      "action_type": "security_requirement",
+      "next_step": "Allocate manufacturing QA resources to implement rigorous oxide testing.",
+      "priority": "high",
+      "priority_score": 85,
+      "rank": 4,
+      "rationale": "Ensuring oxide integrity through stress and environmental testing is vital for long-term device reliability.",
+      "title": "Gate Oxide Integrity Assurance"
+    },
+    {
+      "action_type": "threat",
+      "next_step": "Review signal amplification safeguards for compliance with design constraints.",
+      "priority": "high",
+      "priority_score": 80,
+      "rank": 5,
+      "rationale": "Direct interface threats highlight need for strict signal control to maintain circuit integrity and security post-deployment.",
+      "title": "Unauthorized Signal Amplification"
+    }
+  ],
+  "security_requirements": [
+    {
+      "description": "Ensure leakage paths are minimized to protect against cryptographic key inference.",
+      "design_robustness": "Leakage control designed into MOSFETs remains effective despite deployment environment.",
+      "mitigates": [
+        "Sub-threshold Leakage Exploit"
+      ],
+      "owner": "Design Engineering",
+      "priority": "critical",
+      "priority_rationale": "Early detection and prevention of leakage paths must be prioritized to protect sensitive assets.",
+      "priority_score": 90,
+      "requirement": "The design shall minimize sub-threshold leakage currents below detectable limits for all cryptographic operations.",
+      "sdlc_phase": "implementation",
+      "title": "Sub-threshold Leakage Mitigation",
+      "verification_method": "Simulate and measure leakage currents under worst-case operating conditions during design validation."
+    },
+    {
+      "description": "Manufacturing processes shall ensure robust gate oxide layers resistant to breakdown.",
+      "design_robustness": "Ensures long-term device reliability despite stress or aging, unalterable post-fabrication.",
+      "mitigates": [
+        "Gate Oxide Breakdown"
+      ],
+      "owner": "Manufacturing Quality Assurance",
+      "priority": "high",
+      "priority_rationale": "Manufacturing constraints must ensure resilience of the oxide layer to prevent future failures.",
+      "priority_score": 85,
+      "requirement": "The manufacturing process shall produce gate oxides that withstand stress conditions exceeding operational specifications without degradation.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "title": "Gate Oxide Integrity Assurance",
+      "verification_method": "Environmental and stress testing of representative devices in pre-production batches."
+    },
+    {
+      "description": "Design must prevent unauthorized signal amplification through MOSFETs.",
+      "design_robustness": "Implemented amplification restraints are intrinsic to design; durable post-deployment.",
+      "mitigates": [
+        "Unauthorized Signal Amplification"
+      ],
+      "owner": "Circuit Design",
+      "priority": "high",
+      "priority_rationale": "Preempting signal control issues is critical to protect system operational integrity.",
+      "priority_score": 80,
+      "requirement": "The MOSFET design should include measures that prevent signal amplification beyond control parameters, addressing both intentional and unintentional misuse.",
+      "sdlc_phase": "architecture_design",
+      "title": "Controlled Signal Amplification",
+      "verification_method": "Perform circuit analysis and testing to validate signal amplification controls under varied conditions."
+    }
+  ],
+  "summary": "MOSFETs are fundamental to digital circuit operations and security at the terminals, channel, and body layer. Key threats include sub-threshold leakage, gate oxide breakdown, and unauthorized signal amplification.",
+  "threats": [
+    {
+      "attack_surface": "Gate, Source, Drain terminals",
+      "confidence": "high",
+      "deployment_consequence": "MOSFET physical properties cannot be modified post-manufacture, making remediation through software or firmware impossible.",
+      "description": "An attacker might exploit sub-threshold leakage paths to infer cryptographic keys or sensitive states.",
+      "potential_impact": "Confidentiality breach of cryptographic materials.",
+      "preconditions": [
+        "Attacker knowledge of MOSFET characteristics",
+        "Physical proximity to the device",
+        "Target is operational with cryptographic functions in use"
+      ],
+      "priority": "critical",
+      "priority_rationale": "Critical because leakage poses direct risks to key confidentiality without available post-deployment fixes.",
+      "priority_score": 95,
+      "scenario": "An attacker probes the device to measure unintended sub-threshold currents revealing cryptographic operations.",
+      "sdlc_phase": "implementation",
+      "sdlc_phase_description": "Leakage arises from physical properties realized during the implementation phase of the MOSFET.",
+      "title": "Sub-threshold Leakage Exploit"
+    },
+    {
+      "attack_surface": "Gate Terminal",
+      "confidence": "medium",
+      "deployment_consequence": "Requires robust oxide manufacturing; cannot be corrected post-deployment.",
+      "description": "Over time, or with intentional electrical stress, the gate oxide can degrade, causing uncontrolled states or failure.",
+      "potential_impact": "Device failure or corruption of control signals leading to denial of service or unauthorized operations.",
+      "preconditions": [
+        "High-voltage condition applied",
+        "Prolonged use near degradation limits"
+      ],
+      "priority": "high",
+      "priority_rationale": "High due to potential for device failure and unauthorized control. Must be addressed during manufacturing.",
+      "priority_score": 85,
+      "scenario": "An attacker or environmental condition induces excessive voltage across the gate oxide, leading to a breakdown.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "sdlc_phase_description": "Manufacturing processes impact gate oxide integrity and susceptibility to breakdown.",
+      "title": "Gate Oxide Breakdown"
+    },
+    {
+      "attack_surface": "Gate, Source, Drain terminals",
+      "confidence": "medium",
+      "deployment_consequence": "Design missteps allowing unauthorized amplification can only be mitigated through design changes, not patches.",
+      "description": "Exploitation of MOSFET characteristics to amplify signals, bypassing intended control mechanisms.",
+      "potential_impact": "Unauthorized activation or deactivation of circuit paths, possibly leading to functional failures or security breaches.",
+      "preconditions": [
+        "Physical access to device terminals",
+        "Knowledge of target circuit behavior"
+      ],
+      "priority": "high",
+      "priority_rationale": "High due to impact on control integrity, though requiring direct access limits external exploit availability.",
+      "priority_score": 80,
+      "scenario": "Attacker interfaces physically to amplify control signals, achieving unintended operations.",
+      "sdlc_phase": "deployment_operation",
+      "sdlc_phase_description": "Post-deployment, physical access can enable signal manipulation that wasn't testable prior.",
+      "title": "Unauthorized Signal Amplification"
+    }
+  ]
+}

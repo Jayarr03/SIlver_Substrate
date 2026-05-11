@@ -1,0 +1,180 @@
+{
+  "component_name": "Dopants",
+  "deployment_assumptions": "The dopants in the semiconductor cannot be modified post-deployment. Devices are often treated as immutable, making pre-deployment mitigation and robust manufacturing controls critical.",
+  "level": "doped_regions_wells_junctions",
+  "open_questions": [
+    "What specific monitoring technologies are currently used during the doping process?",
+    "Are there existing measures in place to verify mask integrity pre-production?",
+    "What level of process variation is considered acceptable for the targeted device applications?"
+  ],
+  "prioritization_summary": "Priority is driven by the criticality of maintaining integrity of logic states and device thresholds, susceptibility to tampering, and inability to modify dopants post-fabrication.",
+  "prioritized_actions": [
+    {
+      "action_type": "security_requirement",
+      "next_step": "Implement automated mask integrity verification protocols.",
+      "priority": "critical",
+      "priority_score": 95,
+      "rank": 1,
+      "rationale": "Critical rank due to direct impact on fundamental device design; errors cannot be corrected post-fabrication.",
+      "title": "Mask Integrity Verification"
+    },
+    {
+      "action_type": "threat",
+      "next_step": "Develop monitoring protocols for ion implantation dose settings.",
+      "priority": "high",
+      "priority_score": 86,
+      "rank": 2,
+      "rationale": "High priority to prevent irreversible implant setting changes that affect device functionality.",
+      "title": "Implant Dose Tampering"
+    },
+    {
+      "action_type": "security_requirement",
+      "next_step": "Deploy implantation monitoring and alert systems.",
+      "priority": "high",
+      "priority_score": 88,
+      "rank": 3,
+      "rationale": "High priority due to its role in proactive monitoring and alerting dose misconfigurations before device fabrication.",
+      "title": "Dose Monitoring System"
+    },
+    {
+      "action_type": "threat",
+      "next_step": "Evaluate design verification procedures for well isolation specifications.",
+      "priority": "high",
+      "priority_score": 81,
+      "rank": 4,
+      "rationale": "Important to address early due to foundational impact on reliable device performance through deployment.",
+      "title": "Well Isolation Bypass"
+    },
+    {
+      "action_type": "security_requirement",
+      "next_step": "Implement statistical process control measures for diffusion and implantation steps.",
+      "priority": "medium",
+      "priority_score": 74,
+      "rank": 5,
+      "rationale": "Medium priority mitigates variability to ensure uniform device performance but less imminent than immediate tampering threats.",
+      "title": "Process Variation Control"
+    }
+  ],
+  "security_requirements": [
+    {
+      "description": "Ensure the ion implantation process is monitored to detect and prevent deviations from approved settings.",
+      "design_robustness": "Continuous monitoring ensures that malicious or accidental changes are detected and rectified before device release.",
+      "mitigates": [
+        "Implant Dose Tampering"
+      ],
+      "owner": "Quality Assurance Team",
+      "priority": "high",
+      "priority_rationale": "High priority for proactive detection and prevention of critical implant dose issues before device fabrication completion.",
+      "priority_score": 88,
+      "requirement": "Shall implement real-time monitoring and logging of implant dose adjustments and alert for deviations.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "title": "Dose Monitoring System",
+      "verification_method": "Audit of logs and alert system tests"
+    },
+    {
+      "description": "Implement stringent verification of mask integrity before manufacturing begins.",
+      "design_robustness": "Ensures that masks cannot be tampered with undetected, preserving design integrity throughout production.",
+      "mitigates": [
+        "Mask Tampering"
+      ],
+      "owner": "Design and Verification Teams",
+      "priority": "critical",
+      "priority_rationale": "Critical because mask integrity fundamentally controls device function, non-correctable post-fabrication.",
+      "priority_score": 95,
+      "requirement": "Masks should undergo automated integrity verification processes to confirm conformity with design specifications.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "title": "Mask Integrity Verification",
+      "verification_method": "Automated optical inspection and checksum validation"
+    },
+    {
+      "description": "Implement controls to minimize process variations during doping to ensure consistent device performance.",
+      "design_robustness": "Ensures uniform performance across devices regardless of minor unintentional process variations.",
+      "mitigates": [
+        "Process Variation Exploitation"
+      ],
+      "owner": "Process Engineering",
+      "priority": "medium",
+      "priority_rationale": "Medium priority as impact is dependent on exact levels of process control but vital for reliability and yield.",
+      "priority_score": 74,
+      "requirement": "Shall specify allowable process variation margins and implement controls to maintain them.",
+      "sdlc_phase": "implementation",
+      "title": "Process Variation Control",
+      "verification_method": "Statistical process control and periodic calibration verification"
+    }
+  ],
+  "summary": "Dopants adjust semiconductor properties, forming essential p-n junctions. This layer is susceptible to tampering during manufacturing and unintentional variance impacting device functionality.",
+  "threats": [
+    {
+      "attack_surface": "Ion implantation equipment",
+      "confidence": "high",
+      "deployment_consequence": "Implant dose cannot be altered after device manufacture, making pre-deployment controls essential.",
+      "description": "An attacker could modify the implant dose during the manufacturing process, affecting the semiconductor's electrical properties.",
+      "potential_impact": "Altered electrical characteristics leading to reliability failures or functional abnormalities.",
+      "preconditions": [
+        "Insider access to equipment",
+        "Lack of monitoring controls"
+      ],
+      "priority": "high",
+      "priority_rationale": "High impact due to altering foundational device characteristics; dose changes are non-reversible post-production.",
+      "priority_score": 86,
+      "scenario": "An insider alters the dose settings on ion implantation equipment, causing functional discrepancies in the doped regions.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "sdlc_phase_description": "This threat arises during the manufacturing phase where implant doses are applied.",
+      "title": "Implant Dose Tampering"
+    },
+    {
+      "attack_surface": "Mask design and manufacturing",
+      "confidence": "high",
+      "deployment_consequence": "Once produced, faulty dopant regions cannot be corrected.",
+      "description": "Modifications to the mask used during the implantation process can lead to unintended doping patterns.",
+      "potential_impact": "Leads to device malfunctions or reduced reliability.",
+      "preconditions": [
+        "Access to mask design phase",
+        "Inadequate design reviews"
+      ],
+      "priority": "critical",
+      "priority_rationale": "Critical impact as masks directly define operational characteristics; errors are non-recoverable without remanufacturing.",
+      "priority_score": 92,
+      "scenario": "An attacker introduces defects in the mask design, leading to erroneous dopant distributions.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "sdlc_phase_description": "Masks are utilized during the manufacturing phase to define dopant regions.",
+      "title": "Mask Tampering"
+    },
+    {
+      "attack_surface": "Diffusion and implantation processes",
+      "confidence": "medium",
+      "deployment_consequence": "Effects are intrinsic and persist through the lifecycle of the device.",
+      "description": "Excessive doping process variation can be exploited to degrade device performance.",
+      "potential_impact": "Could lead to reduced yield or operational failures.",
+      "preconditions": [
+        "High variability in manufacturing",
+        "Weak process controls"
+      ],
+      "priority": "medium",
+      "priority_rationale": "Medium priority due to impact largely depending on process control quality, yet with potential major repercussions.",
+      "priority_score": 75,
+      "scenario": "Subtle process fluctuations are leveraged to create significant deviations in electrical parameters.",
+      "sdlc_phase": "implementation",
+      "sdlc_phase_description": "Variations can be anticipated and mitigated during the design and fabrication process stages.",
+      "title": "Process Variation Exploitation"
+    },
+    {
+      "attack_surface": "Design specifications for well isolation",
+      "confidence": "medium",
+      "deployment_consequence": "Post-deployment fixes are impractical; robust design is crucial.",
+      "description": "Compromising the isolation between wells could result in leakage currents impacting device performance.",
+      "potential_impact": "Degraded performance, potential for unintended interactions.",
+      "preconditions": [
+        "Poor design verification",
+        "Lack of redundancy"
+      ],
+      "priority": "high",
+      "priority_rationale": "High due to critical impact on reliable device operation and inability to address post-fabrication.",
+      "priority_score": 81,
+      "scenario": "Intentional defect creation leads to electrical leakage between wells.",
+      "sdlc_phase": "architecture_design",
+      "sdlc_phase_description": "Isolation integrity is integral to design and has implications on device reliability and security.",
+      "title": "Well Isolation Bypass"
+    }
+  ]
+}

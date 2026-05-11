@@ -31,6 +31,49 @@ See [docs/pipeline.md](docs/pipeline.md) for the process pipeline and suggested 
 
 ## Usage
 
+All assessments are automatically saved to the `library/` folder as timestamped JSON files (e.g., `library/gate_oxide_20260511_143022.json`). The library folder is excluded from version control.
+
+### Web Interface (Recommended)
+
+Run the full-stack web application:
+
+**Terminal 1 - Start Backend API:**
+```bash
+./start-backend.sh
+# Or manually: PYTHONPATH=src python -m silver_substrate.api
+```
+
+**Terminal 2 - Start Frontend:**
+```bash
+./start-frontend.sh
+# Or manually: cd frontend && npm run dev
+```
+
+Then open http://localhost:5173 in your browser.
+
+The web interface provides:
+- **Interactive assessment creation** - Just enter a component name, get AI suggestions, and generate
+- **Assessment library** - Browse all generated assessments
+- **Detailed threat view** - View threats, requirements, and prioritized actions
+- **Clean UI** - Easy to navigate and understand
+
+### CLI: Interactive Mode
+
+Simply provide the component name and let AI suggest the hardware level, description, assets, interfaces, and priority drivers:
+
+```bash
+PYTHONPATH=src python -m silver_substrate.cli --component "gate oxide"
+```
+
+The tool will:
+1. Analyze the component name
+2. Suggest appropriate metadata (level, description, assets, interfaces, priority drivers)
+3. Show you the suggestions with rationale
+4. Prompt you to confirm before proceeding with the assessment
+5. Save the results to `library/gate_oxide_YYYYMMDD_HHMMSS.json`
+
+### Manual Mode
+
 Preview the request that would be sent to the model:
 
 ```bash
@@ -45,7 +88,7 @@ PYTHONPATH=src python -m silver_substrate.cli \
   --build-request
 ```
 
-Generate an assessment with OpenAI:
+Generate an assessment with explicit parameters:
 
 ```bash
 cp .env.example .env
@@ -57,14 +100,30 @@ PYTHONPATH=src python -m silver_substrate.cli \
   --priority-driver "protects root key material"
 ```
 
+Customize the library output directory:
+
+```bash
+PYTHONPATH=src python -m silver_substrate.cli \
+  --component "bond pad" \
+  --library-dir "assessments/2026"
+```
+
 Secrets are loaded from `.env` by default, and `.env` is ignored by git. The model is intentionally provided through `OPENAI_MODEL` in `.env` or `--model` so the application can choose the deployed model explicitly rather than baking in a stale default.
 
 ## Development
 
-Install local development requirements:
+Install backend dependencies:
 
 ```bash
 python -m pip install -r requirements.txt
+```
+
+Install frontend dependencies:
+
+```bash
+cd frontend
+npm install
+cd ..
 ```
 
 Run the tests:

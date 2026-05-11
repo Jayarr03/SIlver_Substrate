@@ -1,0 +1,144 @@
+{
+  "component_name": "N-Type regions",
+  "deployment_assumptions": "Devices using these N-Type regions are assumed to be difficult or impossible to update post-deployment. Design-time controls and robust manufacturing practices are emphasized.",
+  "level": "doped_regions_wells_junctions",
+  "open_questions": [
+    "What specific dopant materials and concentrations are used in the N-Type regions?",
+    "What thermal conditions does the device typically endure, and how are these measured?",
+    "How robust are current supply chain audits and fabricator integrity checks?"
+  ],
+  "prioritization_summary": "Threats and requirements are prioritized based on the criticality of maintaining junction resistance, preventing junction leakage, and controlling dopant diffusion within a non-updatable context.",
+  "prioritized_actions": [
+    {
+      "action_type": "security_requirement",
+      "next_step": "Develop thermal models and validate against performance benchmarks.",
+      "priority": "critical",
+      "priority_score": 95,
+      "rank": 1,
+      "rationale": "Addresses the most severe post-deployment consequence related to diffusion.",
+      "title": "Thermal Management Design"
+    },
+    {
+      "action_type": "threat",
+      "next_step": "Implement enhanced calibration checks and process control measures.",
+      "priority": "high",
+      "priority_score": 85,
+      "rank": 2,
+      "rationale": "Direct impact on device integrity; requires immediate process intervention.",
+      "title": "Junction Leakage"
+    },
+    {
+      "action_type": "security_requirement",
+      "next_step": "Initiate a third-party audit of current doping processes and suppliers.",
+      "priority": "medium",
+      "priority_score": 70,
+      "rank": 3,
+      "rationale": "Strategically important in early stages to prevent value-chain manipulation.",
+      "title": "Supply Chain Doping Verification"
+    }
+  ],
+  "security_requirements": [
+    {
+      "description": "Mitigate junction leakage through precise control of doping processes and equipment calibration.",
+      "design_robustness": "Tight controls on process variances maintain junction integrity without needing updates.",
+      "mitigates": [
+        "Junction Leakage"
+      ],
+      "owner": "Process Engineering Team",
+      "priority": "high",
+      "priority_rationale": "Directly addresses manufacturing-level threat with robust, unchanging process controls.",
+      "priority_score": 85,
+      "requirement": "Shall implement sub-5% variance process control in doping concentrations to prevent leakage.",
+      "sdlc_phase": "implementation",
+      "title": "Precision Doping Process Control",
+      "verification_method": "Periodic equipment calibration and process monitoring logs."
+    },
+    {
+      "description": "Prevent dopant diffusion by maintaining controlled thermal profiles during operation.",
+      "design_robustness": "Thermal management is integrated during design, mitigating diffusion risk over the device's life.",
+      "mitigates": [
+        "Dopant Diffusion"
+      ],
+      "owner": "Thermal Design Team",
+      "priority": "critical",
+      "priority_rationale": "Necessary to ensure dopant stability under all expected operating conditions.",
+      "priority_score": 95,
+      "requirement": "Should design thermal profiles that operate below known diffusion acceleration temperatures.",
+      "sdlc_phase": "architecture_design",
+      "title": "Thermal Management Design",
+      "verification_method": "Simulation and thermal profile testing before production."
+    },
+    {
+      "description": "Ensure doping process integrity through robust supply chain verification steps.",
+      "design_robustness": "Addresses supply chain threats by ensuring integrity before assembly is complete.",
+      "mitigates": [
+        "Implant Dose Tampering"
+      ],
+      "owner": "Supply Chain Security Team",
+      "priority": "medium",
+      "priority_rationale": "Balances supply chain complexity with verifiable protection against tampering risks.",
+      "priority_score": 70,
+      "requirement": "Shall implement verification measures to ensure doping levels remain as designed during manufacturing.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "title": "Supply Chain Doping Verification",
+      "verification_method": "Third-party audits and material inspections pre-assembly."
+    }
+  ],
+  "summary": "Assessment of N-Type regions in doped areas focusing on junction integrity and resistance to process variations, ensuring robust design due to post-deployment immutability.",
+  "threats": [
+    {
+      "attack_surface": "Physical process variations in doping concentration.",
+      "confidence": "high",
+      "deployment_consequence": "Hard to detect or fix post-manufacture; can require device replacement.",
+      "description": "Unintended current flow across the doped regions, which can degrade performance and reliability.",
+      "potential_impact": "Increased power consumption or circuit failure due to leakage.",
+      "preconditions": [
+        "Imprecise doping equipment calibration",
+        "Lack of process monitoring"
+      ],
+      "priority": "high",
+      "priority_rationale": "Junction leakage directly impacts device integrity and operation, necessitating precise implementation controls.",
+      "priority_score": 85,
+      "scenario": "Process variation leads to elevated dopant concentrations, forming unintended conductive paths.",
+      "sdlc_phase": "implementation",
+      "sdlc_phase_description": "Leakage is introduced during process implementation and must be controlled with precise doping techniques.",
+      "title": "Junction Leakage"
+    },
+    {
+      "attack_surface": "Thermal conditions during operation or testing.",
+      "confidence": "high",
+      "deployment_consequence": "Design choices cannot be altered post-deployment; diffusion effects are cumulative over time.",
+      "description": "Uncontrolled movement of dopants from the intended regions, affecting device characteristics.",
+      "potential_impact": "Changes in electrical characteristics, leading to reliability issues.",
+      "preconditions": [
+        "High operating temperatures",
+        "Poor thermal management design"
+      ],
+      "priority": "critical",
+      "priority_rationale": "Post-deployment consequence of device alteration is severe; design choices must be finalized before manufacturing.",
+      "priority_score": 95,
+      "scenario": "High-temperature operation causes dopants to diffuse, altering junction properties.",
+      "sdlc_phase": "architecture_design",
+      "sdlc_phase_description": "Diffusion can be managed early in design by selecting appropriate dopant species and process temperatures.",
+      "title": "Dopant Diffusion"
+    },
+    {
+      "attack_surface": "Supply chain and fabrication process integrity.",
+      "confidence": "medium",
+      "deployment_consequence": "Detection post-fabrication is economically unfeasible; impacts device authenticity and trust.",
+      "description": "Unauthorized changes to the doping levels, potentially affecting device function and security.",
+      "potential_impact": "Device may not perform to specifications, leading to security vulnerabilities.",
+      "preconditions": [
+        "Weak supplier controls",
+        "Insufficient process audits"
+      ],
+      "priority": "medium",
+      "priority_rationale": "While critical, the managed supply chain can mitigate this risk; however, impacts are severe if unaddressed.",
+      "priority_score": 70,
+      "scenario": "Supply chain manipulation results in altered dopant levels, impacting circuit logic.",
+      "sdlc_phase": "manufacturing_supply_chain",
+      "sdlc_phase_description": "Risks introduced by inadequate supply chain controls during doping process steps.",
+      "title": "Implant Dose Tampering"
+    }
+  ]
+}
