@@ -1,0 +1,3 @@
+# Runtime dependencies: none beyond the Python standard library.
+# Test runner used by the repository test suite.
+pytest>=9.0.0
