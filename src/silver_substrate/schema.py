@@ -5,15 +5,14 @@ from __future__ import annotations
 from typing import Any
 
 HARDWARE_LEVEL_VALUES = [
-    "architecture_rtl_gates",
-    "transistors",
-    "terminals_channel_body",
-    "doped_regions_wells_junctions",
-    "oxides_dielectrics_isolation",
-    "contacts_vias_interconnects",
-    "passivation_protective_layers",
-    "die_package_substrate_pins",
-    "wafer_process_chemistry",
+    "system",
+    "architecture",
+    "microarchitecture",
+    "rtl",
+    "gate",
+    "transistor",
+    "layout",
+    "process",
 ]
 
 SDLC_PHASE_VALUES = [
@@ -243,14 +242,371 @@ ASSESSMENT_SCHEMA: dict[str, Any] = {
 }
 
 
-def responses_text_format() -> dict[str, Any]:
-    """Return the Responses API structured-output configuration."""
+# Multi-agent pipeline schemas
 
+COMPONENT_SCOPE_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "component_definition": {"type": "string"},
+        "component_boundaries": {"type": "string"},
+        "parent_components": {"type": "array", "items": {"type": "string"}},
+        "child_or_sub_components": {"type": "array", "items": {"type": "string"}},
+        "adjacent_components": {"type": "array", "items": {"type": "string"}},
+        "normal_operating_conditions": {"type": "array", "items": {"type": "string"}},
+        "out_of_scope_items": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": [
+        "component_definition",
+        "component_boundaries",
+        "parent_components",
+        "child_or_sub_components",
+        "adjacent_components",
+        "normal_operating_conditions",
+        "out_of_scope_items",
+    ],
+}
+
+
+FAILURE_MECHANISM_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "failure_mechanisms": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "mechanism": {"type": "string"},
+                    "trigger_conditions": {"type": "array", "items": {"type": "string"}},
+                    "observable_effects": {"type": "array", "items": {"type": "string"}},
+                    "permanence": {"type": "string", "enum": ["transient", "persistent", "permanent"]},
+                    "security_relevance": {"type": "string"},
+                },
+                "required": [
+                    "name",
+                    "mechanism",
+                    "trigger_conditions",
+                    "observable_effects",
+                    "permanence",
+                    "security_relevance",
+                ],
+            },
+        }
+    },
+    "required": ["failure_mechanisms"],
+}
+
+
+ATTACKER_MODEL_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "attacker_models": {"type": "array", "items": {"type": "string"}},
+        "threat_scenarios": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string"},
+                    "attacker_capability": {"type": "string"},
+                    "attack_path": {"type": "string"},
+                    "physical_mechanism": {"type": "string"},
+                    "security_impact": {"type": "string"},
+                    "preconditions": {"type": "array", "items": {"type": "string"}},
+                    "confidence": {"type": "string", "enum": ["low", "medium", "high"]},
+                },
+                "required": [
+                    "title",
+                    "attacker_capability",
+                    "attack_path",
+                    "physical_mechanism",
+                    "security_impact",
+                    "preconditions",
+                    "confidence",
+                ],
+            },
+        },
+    },
+    "required": ["attacker_models", "threat_scenarios"],
+}
+
+
+LIFECYCLE_RISK_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "lifecycle_risks": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "risk": {"type": "string"},
+                    "lifecycle_stage": {
+                        "type": "string",
+                        "enum": ["manufacture", "test", "deployment", "field operation", "end of life"],
+                    },
+                    "accelerating_conditions": {"type": "array", "items": {"type": "string"}},
+                    "impact": {"type": "string"},
+                    "recommended_controls": {"type": "array", "items": {"type": "string"}},
+                },
+                "required": [
+                    "risk",
+                    "lifecycle_stage",
+                    "accelerating_conditions",
+                    "impact",
+                    "recommended_controls",
+                ],
+            },
+        }
+    },
+    "required": ["lifecycle_risks"],
+}
+
+
+MANUFACTURING_RISK_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "manufacturing_risks": {"type": "array", "items": {"type": "string"}},
+        "supply_chain_risks": {"type": "array", "items": {"type": "string"}},
+        "process_controls": {"type": "array", "items": {"type": "string"}},
+        "required_evidence": {"type": "array", "items": {"type": "string"}},
+        "open_supplier_questions": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": [
+        "manufacturing_risks",
+        "supply_chain_risks",
+        "process_controls",
+        "required_evidence",
+        "open_supplier_questions",
+    ],
+}
+
+
+COUNTERMEASURE_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "countermeasures": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string"},
+                    "type": {"type": "string", "enum": ["preventive", "detective", "corrective", "compensating"]},
+                    "description": {"type": "string"},
+                    "implementation_layer": {"type": "string"},
+                    "mitigates": {"type": "array", "items": {"type": "string"}},
+                    "owner": {"type": "string"},
+                    "residual_risk": {"type": "string"},
+                },
+                "required": [
+                    "title",
+                    "type",
+                    "description",
+                    "implementation_layer",
+                    "mitigates",
+                    "owner",
+                    "residual_risk",
+                ],
+            },
+        }
+    },
+    "required": ["countermeasures"],
+}
+
+
+VERIFICATION_PLAN_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "verification_plan": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "control_or_requirement": {"type": "string"},
+                    "test_method": {"type": "string"},
+                    "evidence_required": {"type": "string"},
+                    "acceptance_criteria": {"type": "string"},
+                    "test_stage": {
+                        "type": "string",
+                        "enum": ["pre-silicon", "post-silicon", "manufacturing", "field monitoring"],
+                    },
+                },
+                "required": [
+                    "control_or_requirement",
+                    "test_method",
+                    "evidence_required",
+                    "acceptance_criteria",
+                    "test_stage",
+                ],
+            },
+        }
+    },
+    "required": ["verification_plan"],
+}
+
+
+OPEN_QUESTIONS_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "open_questions": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "question": {"type": "string"},
+                    "asked_of": {"type": "string"},
+                    "why_it_matters": {"type": "string"},
+                    "blocks": {"type": "array", "items": {"type": "string"}},
+                    "priority": {"type": "string", "enum": ["critical", "high", "medium", "low"]},
+                },
+                "required": ["question", "asked_of", "why_it_matters", "blocks", "priority"],
+            },
+        }
+    },
+    "required": ["open_questions"],
+}
+
+
+PRIORITIZATION_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "prioritized_items": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "item_title": {"type": "string"},
+                    "item_type": {"type": "string"},
+                    "impact": {"type": "integer", "minimum": 1, "maximum": 10},
+                    "exploitability": {"type": "integer", "minimum": 1, "maximum": 10},
+                    "permanence": {"type": "integer", "minimum": 1, "maximum": 10},
+                    "detectability": {"type": "integer", "minimum": 1, "maximum": 10},
+                    "lifecycle_lock_in": {"type": "integer", "minimum": 1, "maximum": 10},
+                    "confidence": {"type": "integer", "minimum": 1, "maximum": 10},
+                    "total_score": {"type": "integer"},
+                    "priority": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+                    "rationale": {"type": "string"},
+                },
+                "required": [
+                    "item_title",
+                    "item_type",
+                    "impact",
+                    "exploitability",
+                    "permanence",
+                    "detectability",
+                    "lifecycle_lock_in",
+                    "confidence",
+                    "total_score",
+                    "priority",
+                    "rationale",
+                ],
+            },
+        }
+    },
+    "required": ["prioritized_items"],
+}
+
+
+QUALITY_CRITIC_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "review_findings": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "finding": {"type": "string"},
+                    "severity": {"type": "string", "enum": ["critical", "high", "medium", "low"]},
+                    "evidence": {"type": "string"},
+                    "recommended_fix": {"type": "string"},
+                },
+                "required": ["finding", "severity", "evidence", "recommended_fix"],
+            },
+        },
+        "quality_score": {
+            "type": "object",
+            "properties": {
+                "technical_accuracy": {"type": "integer", "minimum": 0, "maximum": 100},
+                "security_framing": {"type": "integer", "minimum": 0, "maximum": 100},
+                "actionability": {"type": "integer", "minimum": 0, "maximum": 100},
+                "testability": {"type": "integer", "minimum": 0, "maximum": 100},
+                "prioritization_quality": {"type": "integer", "minimum": 0, "maximum": 100},
+            },
+            "required": [
+                "technical_accuracy",
+                "security_framing",
+                "actionability",
+                "testability",
+                "prioritization_quality",
+            ],
+        },
+    },
+    "required": ["review_findings", "quality_score"],
+}
+
+
+IMPLEMENTATION_SUMMARY_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "executive_summary": {"type": "string"},
+        "top_threats": {"type": "array", "items": {"type": "string"}},
+        "top_recommendations": {"type": "array", "items": {"type": "string"}},
+        "implementation_plan": {"type": "array", "items": {"type": "string"}},
+        "decision_points": {"type": "array", "items": {"type": "string"}},
+        "residual_risks": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": [
+        "executive_summary",
+        "top_threats",
+        "top_recommendations",
+        "implementation_plan",
+        "decision_points",
+        "residual_risks",
+    ],
+}
+
+
+def _add_additional_properties_false(schema: dict[str, Any]) -> dict[str, Any]:
+    """Recursively add additionalProperties: false to all objects in schema for strict mode."""
+    if not isinstance(schema, dict):
+        return schema
+    
+    result = schema.copy()
+    
+    # Add additionalProperties: false to this object if it's an object type
+    if result.get("type") == "object" and "additionalProperties" not in result:
+        result["additionalProperties"] = False
+    
+    # Recursively process nested schemas
+    if "properties" in result:
+        result["properties"] = {
+            key: _add_additional_properties_false(value)
+            for key, value in result["properties"].items()
+        }
+    
+    if "items" in result:
+        result["items"] = _add_additional_properties_false(result["items"])
+    
+    if "additionalProperties" in result and isinstance(result["additionalProperties"], dict):
+        result["additionalProperties"] = _add_additional_properties_false(result["additionalProperties"])
+    
+    return result
+
+
+def responses_text_format(schema: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Return the Responses API structured-output configuration.
+    
+    Args:
+        schema: Optional custom schema. If not provided, uses ASSESSMENT_SCHEMA.
+    """
+    final_schema = schema if schema is not None else ASSESSMENT_SCHEMA
+    
+    # Recursively ensure all objects have additionalProperties: false for strict mode
+    final_schema = _add_additional_properties_false(final_schema)
+    
     return {
         "format": {
             "type": "json_schema",
             "name": "component_threat_assessment",
             "strict": True,
-            "schema": ASSESSMENT_SCHEMA,
+            "schema": final_schema,
         }
     }

@@ -7,22 +7,21 @@ from enum import StrEnum
 
 
 class HardwareLevel(StrEnum):
-    """Levels below software/firmware that can be assessed."""
+    """Industry-standard hardware design abstraction levels."""
 
-    ARCHITECTURE_RTL_GATES = "architecture_rtl_gates"
-    TRANSISTORS = "transistors"
-    TERMINALS_CHANNEL_BODY = "terminals_channel_body"
-    DOPED_REGIONS_WELLS_JUNCTIONS = "doped_regions_wells_junctions"
-    OXIDES_DIELECTRICS_ISOLATION = "oxides_dielectrics_isolation"
-    CONTACTS_VIAS_INTERCONNECTS = "contacts_vias_interconnects"
-    PASSIVATION_PROTECTIVE_LAYERS = "passivation_protective_layers"
-    DIE_PACKAGE_SUBSTRATE_PINS = "die_package_substrate_pins"
-    WAFER_PROCESS_CHEMISTRY = "wafer_process_chemistry"
+    SYSTEM = "system"
+    ARCHITECTURE = "architecture"
+    MICROARCHITECTURE = "microarchitecture"
+    RTL = "rtl"
+    GATE = "gate"
+    TRANSISTOR = "transistor"
+    LAYOUT = "layout"
+    PROCESS = "process"
 
 
 @dataclass(frozen=True)
 class LevelProfile:
-    """Prompting metadata for one layer of the silicon stack."""
+    """Prompting metadata for one hardware abstraction level."""
 
     level: HardwareLevel
     display_name: str
@@ -32,113 +31,109 @@ class LevelProfile:
 
 
 LEVEL_PROFILES: dict[HardwareLevel, LevelProfile] = {
-    HardwareLevel.ARCHITECTURE_RTL_GATES: LevelProfile(
-        level=HardwareLevel.ARCHITECTURE_RTL_GATES,
-        display_name="Architecture / RTL / Gates",
-        component_examples=("bus fabric", "debug controller", "crypto datapath", "scan chain"),
+    HardwareLevel.SYSTEM: LevelProfile(
+        level=HardwareLevel.SYSTEM,
+        display_name="System Level",
+        component_examples=("SoC", "multi-chip module", "FPGA system", "embedded platform", "chiplet-based system"),
         threat_lenses=(
-            "privilege or isolation boundary violations",
-            "logic Trojan insertion or trigger paths",
-            "fault propagation through control and datapath logic",
-            "test/debug feature misuse",
+            "cross-component vulnerabilities and trust boundaries",
+            "supply chain insertion and system-level backdoors",
+            "board-level attacks and physical tampering",
+            "power/clock distribution exploitation",
+            "system boot and secure provisioning",
         ),
-        evidence_to_collect=("netlist or RTL role", "clock/reset domains", "test access", "security boundary"),
+        evidence_to_collect=("system architecture", "chip boundaries", "boot flow", "trust anchors", "physical security"),
     ),
-    HardwareLevel.TRANSISTORS: LevelProfile(
-        level=HardwareLevel.TRANSISTORS,
-        display_name="Transistors",
-        component_examples=("NMOS device", "PMOS device", "FinFET", "power transistor"),
+    HardwareLevel.ARCHITECTURE: LevelProfile(
+        level=HardwareLevel.ARCHITECTURE,
+        display_name="Architecture Level",
+        component_examples=("CPU core", "GPU", "memory controller", "DMA engine", "crypto accelerator", "interconnect fabric"),
         threat_lenses=(
-            "device parameter manipulation",
-            "aging, hot-carrier, or bias-temperature instability abuse",
-            "fault injection sensitivity",
-            "side-channel leakage from switching behavior",
+            "architectural isolation and privilege violations",
+            "shared resource conflicts (cache, TLB, branch predictor)",
+            "side-channel vulnerabilities across architectural boundaries",
+            "covert channel potential",
+            "ISA-level security guarantees",
         ),
-        evidence_to_collect=("device type", "operating voltage", "criticality", "layout neighborhood"),
+        evidence_to_collect=("functional specification", "isolation domains", "shared resources", "privilege levels", "security extensions"),
     ),
-    HardwareLevel.TERMINALS_CHANNEL_BODY: LevelProfile(
-        level=HardwareLevel.TERMINALS_CHANNEL_BODY,
-        display_name="Source, Drain, Gate, Channel, Body",
-        component_examples=("gate terminal", "source/drain extension", "channel", "body tie"),
+    HardwareLevel.MICROARCHITECTURE: LevelProfile(
+        level=HardwareLevel.MICROARCHITECTURE,
+        display_name="Microarchitecture Level",
+        component_examples=("pipeline stage", "branch predictor", "cache hierarchy", "TLB", "execution units", "reorder buffer"),
         threat_lenses=(
-            "threshold voltage shifts",
-            "body-bias or latch-up misuse",
-            "gate control integrity",
-            "localized probing or modification",
+            "speculative execution vulnerabilities (Spectre, Meltdown)",
+            "microarchitectural side channels and timing attacks",
+            "cache-based covert channels",
+            "transient execution exploits",
+            "performance counter leakage",
         ),
-        evidence_to_collect=("terminal function", "bias conditions", "physical accessibility", "guard structures"),
+        evidence_to_collect=("pipeline depth", "speculation mechanisms", "cache structure", "timing behaviors", "shared buffers"),
     ),
-    HardwareLevel.DOPED_REGIONS_WELLS_JUNCTIONS: LevelProfile(
-        level=HardwareLevel.DOPED_REGIONS_WELLS_JUNCTIONS,
-        display_name="Doped Regions / Wells / Junctions",
-        component_examples=("N-well", "P-well", "junction", "implant region"),
+    HardwareLevel.RTL: LevelProfile(
+        level=HardwareLevel.RTL,
+        display_name="RTL (Register Transfer Level)",
+        component_examples=("state machine", "counter", "FIFO", "register file", "control logic", "datapath"),
         threat_lenses=(
-            "implant dose or mask tampering",
-            "leakage and breakdown manipulation",
-            "well isolation bypass",
+            "RTL-level logic bugs and design flaws",
+            "state machine vulnerabilities and illegal states",
+            "RTL trojans and malicious modifications",
+            "timing violations and race conditions",
+            "functional verification gaps",
+        ),
+        evidence_to_collect=("RTL code", "state transitions", "control signals", "clock domains", "reset behavior"),
+    ),
+    HardwareLevel.GATE: LevelProfile(
+        level=HardwareLevel.GATE,
+        display_name="Gate Level",
+        component_examples=("NAND gate", "NOR gate", "XOR gate", "D flip-flop", "multiplexer", "gate netlist"),
+        threat_lenses=(
+            "gate-level hardware trojans",
+            "logic locking and obfuscation bypass",
+            "netlist reverse engineering",
+            "fault injection targeting specific gates",
+            "scan chain and test infrastructure abuse",
+        ),
+        evidence_to_collect=("netlist topology", "gate criticality", "scan insertion", "redundancy", "test points"),
+    ),
+    HardwareLevel.TRANSISTOR: LevelProfile(
+        level=HardwareLevel.TRANSISTOR,
+        display_name="Transistor Level",
+        component_examples=("NMOS", "PMOS", "FinFET", "pass transistor", "SRAM cell", "sense amplifier"),
+        threat_lenses=(
+            "transistor-level aging effects (BTI, HCI, TDDB)",
+            "threshold voltage manipulation and body biasing",
+            "single-event effects and radiation-induced faults",
+            "analog and mixed-signal vulnerabilities",
+            "device physics exploitation",
+        ),
+        evidence_to_collect=("device type", "operating point", "aging models", "bias conditions", "layout context"),
+    ),
+    HardwareLevel.LAYOUT: LevelProfile(
+        level=HardwareLevel.LAYOUT,
+        display_name="Layout / Physical Design",
+        component_examples=("metal layers", "vias", "standard cells", "power grid", "clock tree", "I/O pads"),
+        threat_lenses=(
+            "layout-level trojan insertion",
+            "focused ion beam (FIB) modification",
+            "electromagnetic and power side-channel emissions",
+            "physical probing and microprobing",
+            "electromigration and reliability attacks",
+        ),
+        evidence_to_collect=("layer stack", "metal criticality", "shielding", "physical access", "EM hotspots"),
+    ),
+    HardwareLevel.PROCESS: LevelProfile(
+        level=HardwareLevel.PROCESS,
+        display_name="Process / Fabrication",
+        component_examples=("photomask", "ion implantation", "chemical vapor deposition", "CMP", "process node (7nm, 5nm)"),
+        threat_lenses=(
+            "foundry-level hardware trojans",
+            "mask tampering and lithography manipulation",
             "process variation exploitation",
+            "supply chain insertion during fabrication",
+            "metrology and inspection blind spots",
         ),
-        evidence_to_collect=("doping role", "isolation intent", "mask/process step", "known variation window"),
-    ),
-    HardwareLevel.OXIDES_DIELECTRICS_ISOLATION: LevelProfile(
-        level=HardwareLevel.OXIDES_DIELECTRICS_ISOLATION,
-        display_name="Oxides, Dielectrics, Isolation Structures",
-        component_examples=("gate oxide", "STI", "ILD", "high-k dielectric"),
-        threat_lenses=(
-            "dielectric breakdown or thinning",
-            "isolation defeat",
-            "charge trapping and retention effects",
-            "focused-ion-beam or delayering impact",
-        ),
-        evidence_to_collect=("material", "thickness/geometry", "isolation boundary", "stress profile"),
-    ),
-    HardwareLevel.CONTACTS_VIAS_INTERCONNECTS: LevelProfile(
-        level=HardwareLevel.CONTACTS_VIAS_INTERCONNECTS,
-        display_name="Contacts, Vias, Metal Interconnects",
-        component_examples=("via stack", "top metal route", "power grid", "bond-pad trace"),
-        threat_lenses=(
-            "open/short insertion",
-            "electromigration acceleration",
-            "probing and microprobing exposure",
-            "routing-level Trojan or reroute",
-        ),
-        evidence_to_collect=("net criticality", "metal layer", "redundancy", "physical exposure"),
-    ),
-    HardwareLevel.PASSIVATION_PROTECTIVE_LAYERS: LevelProfile(
-        level=HardwareLevel.PASSIVATION_PROTECTIVE_LAYERS,
-        display_name="Passivation and Protective Layers",
-        component_examples=("passivation opening", "top coat", "shield mesh", "tamper coating"),
-        threat_lenses=(
-            "tamper evidence bypass",
-            "delayering and backside access enablement",
-            "environmental protection degradation",
-            "shield continuity or coverage gaps",
-        ),
-        evidence_to_collect=("layer stack", "openings", "tamper sensors", "environmental requirements"),
-    ),
-    HardwareLevel.DIE_PACKAGE_SUBSTRATE_PINS: LevelProfile(
-        level=HardwareLevel.DIE_PACKAGE_SUBSTRATE_PINS,
-        display_name="Die, Bond Pads, Package, Substrate, Pins",
-        component_examples=("bond pad", "package substrate", "pin", "wire bond"),
-        threat_lenses=(
-            "pin-level abuse and unintended modes",
-            "package probing or rework",
-            "substrate coupling and fault injection",
-            "supply-chain substitution or damage",
-        ),
-        evidence_to_collect=("pin function", "package type", "access controls", "board-level exposure"),
-    ),
-    HardwareLevel.WAFER_PROCESS_CHEMISTRY: LevelProfile(
-        level=HardwareLevel.WAFER_PROCESS_CHEMISTRY,
-        display_name="Wafer Material, Process Chemistry, Lithography, Doping, Etching",
-        component_examples=("photoresist step", "etch chemistry", "implant recipe", "wafer substrate"),
-        threat_lenses=(
-            "recipe tampering",
-            "contamination or material substitution",
-            "lithography mask manipulation",
-            "metrology and process-control blind spots",
-        ),
-        evidence_to_collect=("process step", "control limits", "metrology", "supplier/fab boundary"),
+        evidence_to_collect=("fab location", "process technology", "mask security", "supply chain", "inspection coverage"),
     ),
 }
 

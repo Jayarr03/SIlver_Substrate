@@ -36,10 +36,14 @@ class OpenAIResponsesClient:
         load_env_file(self.env_file)
         api_key = self.api_key or os.environ["OPENAI_API_KEY"]
         model = request.model or self.model or os.environ["OPENAI_MODEL"]
+        
+        # Use the schema from the request if provided
+        text_format = responses_text_format(request.response_schema) if request.response_schema else responses_text_format()
+        
         body = {
             "model": model,
             "input": list(request.messages),
-            "text": responses_text_format(),
+            "text": text_format,
         }
         http_request = urllib.request.Request(
             url=f"{self.base_url.rstrip('/')}/responses",

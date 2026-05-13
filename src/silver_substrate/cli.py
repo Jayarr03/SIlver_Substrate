@@ -14,6 +14,7 @@ from typing import Sequence
 from .hierarchy import HardwareLevel
 from .interactive import confirm_suggestions, format_suggestion_for_display, generate_component_suggestions
 from .models import ComponentInput
+from .multi_agent_pipeline import MultiAgentPipeline
 from .openai_client import OpenAIResponsesClient
 from .pipeline import ThreatGenerationPipeline
 from .settings import load_env_file
@@ -92,6 +93,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     parser.add_argument("--model", help="OpenAI model to use. Defaults to OPENAI_MODEL when omitted.")
     parser.add_argument("--env-file", default=".env", help="Dotenv file containing OPENAI_API_KEY and OPENAI_MODEL.")
+    parser.add_argument(
+        "--agent-mode",
+        choices=["single", "minimal", "full"],
+        default="single",
+        help=(
+            "Analysis mode: 'single' (current single-pass), 'minimal' (6-agent pipeline), "
+            "'full' (12-agent pipeline with comprehensive review). Default: single"
+        ),
+    )
     parser.add_argument(
         "--library-dir",
         default="library",
@@ -173,17 +183,32 @@ def main(argv: Sequence[str] | None = None) -> int:
             priority_drivers=tuple(args.priority_driver),
         )
 
-    pipeline = ThreatGenerationPipeline(
-        client=OpenAIResponsesClient(model=args.model, env_file=env_file_path),
-        model=args.model,
-    )
+    # Select pipeline based on agent mode
+    if args.agent_mode == "single":
+        pipeline = ThreatGenerationPipeline(
+            client=OpenAIResponsesClient(model=args.model, env_file=env_file_path),
+            model=args.model,
+        )
+        mode_description = "single-pass analysis"
+        
+        if args.build_request:
+            request = pipeline.build_request(component)
+            print(json.dumps(asdict(request), indent=2, sort_keys=True, default=str))
+            return 0
+    else:
+        if args.build_request:
+            print("❌ --build-request is only supported for single-agent mode")
+            return 1
+        
+        pipeline = MultiAgentPipeline(
+            client=OpenAIResponsesClient(model=args.model, env_file=env_file_path),
+            agent_mode=args.agent_mode,
+            model=args.model,
+        )
+        agent_count = 6 if args.agent_mode == "minimal" else 12
+        mode_description = f"{args.agent_mode} multi-agent pipeline ({agent_count} agents)"
 
-    if args.build_request:
-        request = pipeline.build_request(component)
-        print(json.dumps(asdict(request), indent=2, sort_keys=True, default=str))
-        return 0
-
-    print("\n🚀 Generating threat assessment...\n")
+    print(f"\n🚀 Generating threat assessment using {mode_description}...\n")
     assessment = pipeline.run(component)
     assessment_data = asdict(assessment)
     

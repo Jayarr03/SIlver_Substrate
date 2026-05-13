@@ -1,0 +1,53 @@
+{
+  "agent_mode": "minimal",
+  "attacker_model": {
+    "attacker_capabilities": [],
+    "environmental_influences": [],
+    "excluded_capabilities": []
+  },
+  "component_name": "test gate",
+  "countermeasures": [],
+  "critic_findings": [],
+  "deployment_assumptions": "Multi-agent analysis includes device physics, adversarial threats, lifecycle risks, and manufacturing considerations",
+  "failure_mechanisms": [],
+  "implementation_summary": null,
+  "level": "architecture_rtl_gates",
+  "lifecycle_risks": [],
+  "manufacturing_risk": null,
+  "open_questions": [],
+  "open_questions_detailed": [],
+  "prioritization_summary": "Multi-dimensional scoring across 6 criteria",
+  "prioritized_actions": [],
+  "prioritized_items": [],
+  "quality_score": null,
+  "scope": {
+    "adjacent_components": [],
+    "child_or_sub_components": [],
+    "component_boundaries": "",
+    "component_definition": "",
+    "normal_operating_conditions": [],
+    "out_of_scope_items": [],
+    "parent_components": []
+  },
+  "security_requirements": [
+    {
+      "description": "",
+      "design_robustness": "",
+      "mitigates": [
+        "Fault Injection"
+      ],
+      "owner": "Hardware design team",
+      "priority": "high",
+      "priority_rationale": "",
+      "priority_score": 50,
+      "requirement": "The design shall include shielding to mitigate effects from environmental interference on logic gates.",
+      "sdlc_phase": "requirements",
+      "title": "Environmental Shielding",
+      "verification_method": "Environmental stress testing."
+    }
+  ],
+  "summary": "",
+  "threat_scenarios": [],
+  "threats": [],
+  "verification_plan": []
+}

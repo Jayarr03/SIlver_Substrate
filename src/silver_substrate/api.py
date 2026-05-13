@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
@@ -151,9 +152,15 @@ def create_assessment() -> tuple[dict[str, Any], int]:
 
     # Build CLI command
     cmd = [
-        "python", "-m", "silver_substrate.cli",
+        sys.executable, "-m", "silver_substrate.cli",
         "--component", component_name,
     ]
+    
+    # Add agent mode (default to single for backward compatibility)
+    agent_mode = data.get("agent_mode", "single")
+    if agent_mode not in ["single", "minimal", "full"]:
+        return jsonify({"error": "agent_mode must be 'single', 'minimal', or 'full'"}), 400
+    cmd.extend(["--agent-mode", agent_mode])
     
     # Add optional parameters if provided
     if "level" in data and data["level"]:
@@ -175,13 +182,23 @@ def create_assessment() -> tuple[dict[str, Any], int]:
             cmd.extend(["--priority-driver", driver])
 
     try:
+        # Adjust timeout based on agent mode
+        # Single: 120s, Minimal (6 agents): 300s, Full (12 agents): 600s
+        timeout_map = {"single": 120, "minimal": 300, "full": 600}
+        timeout = timeout_map.get(agent_mode, 120)
+        
+        # Set PYTHONPATH to include src directory
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(PROJECT_ROOT / "src")
+        
         # Run the CLI command
         result = subprocess.run(
             cmd,
-            cwd=PROJECT_ROOT / "src",
+            cwd=PROJECT_ROOT,
+            env=env,
             capture_output=True,
             text=True,
-            timeout=120,
+            timeout=timeout,
         )
         
         if result.returncode != 0:
